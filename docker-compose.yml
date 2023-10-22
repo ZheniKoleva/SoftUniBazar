@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+    database:
+        container_name: sqlserver
+        image: mcr.microsoft.com/mssql/server
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_SA_PASSWORD=myStrongPassword12#
+        ports:
+            - '1433:1433'
+        deploy:
+            resources:
+                reservations:
+                    cpus: '2'
+                    memory: 2GB               
+        volumes:
+            - sqldata:/var/opt/mssql            
+    webapp:
+        container_name: bazar-app
+        image: zheniebazarscr.azurecr.io/bazar-image
+        ports:
+            - '80:80'
+        build:
+          dockerfile: ./Dockerfile
+        domainname: zhenie           
+        restart: on-failure
+volumes:
+    sqldata:
+      driver: azure_file
+      driver_opts:
+            share_name: sql-volume
+            storage_account_name: zheniebazarsa 
+        
